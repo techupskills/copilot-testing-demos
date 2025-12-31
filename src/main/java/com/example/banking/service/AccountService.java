@@ -46,9 +46,9 @@ public class AccountService {
         
         // Check if withdrawal is allowed
         if ("PREMIUM_CHECKING".equals(account.getAccountType())) {
-            // BUG: Should be >= for the limit check, not >
-            // This allows overdraft of $500.01 when limit is $500.00
-            if (newBalance.compareTo(OVERDRAFT_LIMIT.negate()) > 0) {
+            // BUG FIX: Use >= for the limit check so -$500.00 is allowed but not below
+            // This ensures withdrawals are allowed up to and including the overdraft limit
+            if (newBalance.compareTo(OVERDRAFT_LIMIT.negate()) >= 0) {
                 account.setBalance(newBalance);
                 
                 // Apply overdraft fee if balance goes negative
