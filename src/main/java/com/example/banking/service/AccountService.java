@@ -37,18 +37,18 @@ public class AccountService {
             // BUG FIX: Use >= for the limit check so -$500.00 is allowed but not below
             // This ensures withdrawals are allowed up to and including the overdraft limit
             if (newBalance.compareTo(OVERDRAFT_LIMIT.negate()) >= 0) {
-                account.setBalance(newBalance);
-                
+                BigDecimal finalBalance = newBalance;
+
                 // Apply overdraft fee if balance goes negative
                 if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                    account.setBalance(account.getBalance().subtract(OVERDRAFT_FEE));
+                    finalBalance = finalBalance.subtract(OVERDRAFT_FEE);
                 }
-                
+
+                account.setBalance(finalBalance);
                 return accountRepository.save(account);
             } else {
                 throw new InsufficientFundsException(
                     "Withdrawal would exceed overdraft limit of $" + OVERDRAFT_LIMIT
-                );
             }
         } else {
             // Standard accounts: no overdraft allowed
