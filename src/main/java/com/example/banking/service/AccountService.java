@@ -8,23 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 /**
- * DEMO 5 REFERENCE FILE
- * 
- * This is the AFTER version of AccountService with the new overdraft protection feature
- * and a subtle bug. Use this to replace the original AccountService.java when creating
- * the Pull Request for Demo 5.
- * 
- * Changes from original:
- * 1. Added OVERDRAFT_LIMIT and OVERDRAFT_FEE constants
- * 2. Modified withdraw() to support overdraft for PREMIUM_CHECKING accounts
- * 3. Added overdraft fee application when balance goes negative
- * 4. Added getOverdraftLimit() helper method
- * 5. BUG: Line 39 uses > instead of >= allowing $500.01 overdraft when limit is $500.00
- * 
- * What Copilot should catch:
- * - Missing integration tests for the new overdraft feature
- * - The off-by-one bug in the comparison operator
- * - Need for boundary testing at exactly -$500.00
+ * Service for managing bank accounts, including deposits, withdrawals, and balance retrieval.
+ *
+ * <p>For PREMIUM_CHECKING accounts, limited overdraft is supported up to a configured
+ * overdraft limit, and an overdraft fee is applied when the account balance becomes
+ * negative. Standard account types do not allow overdrafts.</p>
  */
 @Service
 public class AccountService {
