@@ -71,4 +71,33 @@ class AccountServiceIT {
         Account result = accountService.getAccount(testAccount.getId());
         assertThat(result.getBalance()).isEqualByComparingTo("900.00");
     }
+    
+    @Test
+    void shouldReturnOverdraftLimitForPremiumCheckingAccount() {
+        Account premiumAccount = accountRepository.save(
+            new Account("ACC-PREMIUM", new BigDecimal("1000.00"), "PREMIUM_CHECKING")
+        );
+        
+        BigDecimal overdraftLimit = accountService.getOverdraftLimit(premiumAccount);
+        
+        assertThat(overdraftLimit).isEqualByComparingTo("500.00");
+    }
+    
+    @Test
+    void shouldReturnZeroOverdraftLimitForNonPremiumAccount() {
+        BigDecimal overdraftLimit = accountService.getOverdraftLimit(testAccount);
+        
+        assertThat(overdraftLimit).isEqualByComparingTo("0.00");
+    }
+    
+    @Test
+    void shouldReturnZeroOverdraftLimitForSavingsAccount() {
+        Account savingsAccount = accountRepository.save(
+            new Account("ACC-SAVINGS", new BigDecimal("2000.00"), "SAVINGS")
+        );
+        
+        BigDecimal overdraftLimit = accountService.getOverdraftLimit(savingsAccount);
+        
+        assertThat(overdraftLimit).isEqualByComparingTo("0.00");
+    }
 }
